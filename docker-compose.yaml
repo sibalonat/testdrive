@@ -10,6 +10,7 @@ services:
       - .:/app
     depends_on:
       - db
+    entrypoint: ["./wait-for-it.sh", "db:3306", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
   db:
     container_name: django_admin_db
     image: mysql:8.0
