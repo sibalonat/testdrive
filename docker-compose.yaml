@@ -1,5 +1,5 @@
 services:
-  db:
+  admin_db:
     container_name: django_admin_db
     image: mysql:8.0
     restart: always
@@ -18,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
 
-  web:
+  admin_api:
     container_name: django_api
     build: 
       context: .
@@ -29,5 +29,5 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db:
+      admin_db:
         condition: service_healthy

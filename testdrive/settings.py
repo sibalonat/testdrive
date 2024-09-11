@@ -79,8 +79,8 @@ DATABASES = {
         'NAME': 'django_admin',	# Database name
         'USER': 'rini',	# Database username
         'PASSWORD': 'mypassword',	# Database password
-        'HOST': 'db',	# HOST
-        'PORT': '3306',	# HOST
+        'HOST': 'admin_db',	# HOST
+        'PORT': '3306',	# PORT
     }
 }
 
