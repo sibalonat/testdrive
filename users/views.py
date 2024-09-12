@@ -2,6 +2,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import exceptions
+from .authentication import generate_jwt
 from .models import User
 from .serializers import UserSerializer
 
@@ -28,7 +29,14 @@ def login(request):
     
     if not user.check_password(password):
         raise exceptions.AuthenticationFailed('Incorrect password')
-    return Response('Success')
+    response = Response()
+    token = generate_jwt(user)
+    response.set_cookie(key='jwt', value=token, httponly=True)
+    response.data = {
+        'message': 'success',
+        'jwt': token,
+    }
+    return response
 
 @api_view(['GET'])
 def index(request):
