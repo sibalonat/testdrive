@@ -17,3 +17,20 @@ services:
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+
+
+  # ///  commands to delete the errors in the db
+  # docker exec -it django_admin_db sh
+
+# docker-compose down
+# sudo chown -R $(whoami):$(whoami) .dbdata
+# sudo chmod -R 755 .dbdata
+# sudo rm -rf .dbdata/*
+# docker-compose up
+# docker-compose logs admin_db
+# python manage.py migrate
+
+
+# request with curl
+# curl -X POST http://localhost:8000/api/register -H "Content-Type: application/json" -d '{"first_name": "Marin", "last_na
+# me": "Nikolli", "email": "sibalonat@gmail.com", "password": "lidhjaalfa", "confirm_password": "lidhjaalfa"}'
