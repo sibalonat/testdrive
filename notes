@@ -29,7 +29,7 @@ services:
 # docker-compose up
 # docker-compose logs admin_db
 # python manage.py migrate
-
+# docker-compose up --build
 
 # request with curl
 # curl -X POST http://localhost:8000/api/register -H "Content-Type: application/json" -d '{"first_name": "Marin", "last_na
