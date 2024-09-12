@@ -40,6 +40,15 @@ def login(request):
     }
     return response
 
+@api_view(['POST'])
+def logout(_):
+    response = Response()
+    response.delete_cookie('jwt')
+    response.data = {
+        'message': 'success'
+    }
+    return response
+
 class AuthenticatedUser(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

@@ -27,4 +27,5 @@ class JWTAuthentication(BaseAuthentication):
         except get_user_model().DoesNotExist:
             raise exceptions.AuthenticationFailed('User not found')
 
-        return (user, token)
+        # return (user, token)
+        return (user, None)

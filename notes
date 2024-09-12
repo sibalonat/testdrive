@@ -30,6 +30,7 @@ services:
 # docker-compose logs admin_db
 # python manage.py migrate
 # docker-compose up --build
+# python manage.py delete_users
 
 # request with curl
 # curl -X POST http://localhost:8000/api/register -H "Content-Type: application/json" -d '{"first_name": "Marin", "last_na
