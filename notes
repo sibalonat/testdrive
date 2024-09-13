@@ -21,6 +21,7 @@ services:
 
   # ///  commands to delete the errors in the db
   # docker exec -it django_admin_db sh
+  # docker exec -it django_api sh
 
 # docker-compose down
 # sudo chown -R $(whoami):$(whoami) .dbdata
