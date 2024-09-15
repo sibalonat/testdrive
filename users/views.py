@@ -2,7 +2,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import exceptions, viewsets, status
+from rest_framework import exceptions, viewsets, status, generics, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .authentication import JWTAuthentication, generate_jwt
@@ -110,10 +110,35 @@ class RoleViewSet(viewsets.ModelViewSet):
         role = Role.objects.get(id=pk)
         role.delete()
         return Response({'message': 'Role deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
 
+class UserGenericApiView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def get(self, request, pk=None):
+        if pk:
+            return Response({
+                'data': self.retrieve(request, pk).data            
+            })
 
-@api_view(['GET'])
-def index(request):
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
+        return Response({
+            'data': self.list(request).data
+        })
+        
+    def post(self, request):
+        return Response({
+            'message': 'User created successfully',
+            'data': self.create(request).data
+        }, status=status.HTTP_201_CREATED)
+        
+    def put(self, request, pk=None):
+        return Response({
+            'message': 'User updated',
+            'data': self.update(request, pk).data
+        })
+    
+    def delete(self, request, pk=None):
+        self.destroy(request, pk)
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
