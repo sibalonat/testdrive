@@ -1,12 +1,13 @@
 # from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import exceptions, viewsets
+from rest_framework import exceptions, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .authentication import JWTAuthentication, generate_jwt
-from .models import Permission, User
-from .serializers import UserSerializer, PermissionSerializer
+from .models import Permission, Role, User
+from .serializers import RoleSerializer, UserSerializer, PermissionSerializer
 
 @api_view(['POST'])
 def register(request):
@@ -74,33 +75,41 @@ class RoleViewSet(viewsets.ModelViewSet):
     def list(self, request):
         queryset = Role.objects.all()
         serializer = RoleSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({
+            'data': serializer.data
+        })
     
     def create(self, request):
         serializer = RoleSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response({
+            'message': 'Role created successfully',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
     
     def retrieve(self, request, pk=None):
         queryset = Role.objects.all()
         role = get_object_or_404(queryset, pk=pk)
         serializer = RoleSerializer(role)
-        return Response(serializer.data)
+        return Response({
+            'data': serializer.data
+        })
     
     def update(self, request, pk=None):
-        role = Role.objects.get(pk=pk)
+        role = Role.objects.get(id=pk)
         serializer = RoleSerializer(instance=role, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response({
+            'message': 'Role updated successfully',
+            'data': serializer.data
+        }, status=status.HTTP_202_ACCEPTED)
     
     def destroy(self, request, pk=None):
-        role = Role.objects.get(pk=pk)
+        role = Role.objects.get(id=pk)
         role.delete()
-        return Response({'message': 'Role deleted successfully'})
-    # queryset = Role.objects.all()
-    # serializer_class = RoleSerializer
+        return Response({'message': 'Role deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
