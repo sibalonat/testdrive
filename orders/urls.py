@@ -1,7 +1,8 @@
 from django.urls import path
+from .views import ExportApiView, OrderGenericApiView
 
-# from .views import ProductGenericApiView, FileUploadView
 urlpatterns = [
-    # path('products', ProductGenericApiView.as_view()),
-    # path('products/<str:pk>', ProductGenericApiView.as_view()),
+    path('orders', OrderGenericApiView.as_view()),
+    path('orders/<str:pk>', OrderGenericApiView.as_view()),
+    path('export', ExportApiView.as_view()),
 ]
