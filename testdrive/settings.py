@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',	# Add corsheaders to the list of installed apps
     'users',	# Add users app to the list of installed apps
     'products',	# Add products app to the list of installed apps
     'orders',	# Add orders app to the list of installed apps
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',	# Add corsheaders.middleware.CorsMiddleware to the list of middleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -137,3 +139,6 @@ AUTH_USER_MODEL = 'users.User'    # Set the custom user model
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_CREDENTIALS = True

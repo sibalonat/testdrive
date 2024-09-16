@@ -6,6 +6,7 @@ from rest_framework import exceptions, viewsets, status, generics, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from testdrive.pagination import CustomPageNumberPagination
+from .permissions import ViewPermission
 from .authentication import JWTAuthentication, generate_jwt
 from .models import Permission, Role, User
 from .serializers import RoleSerializer, UserSerializer, PermissionSerializer
@@ -72,7 +73,9 @@ class PermissionAPIView(APIView):
         
 class RoleViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & ViewPermission]
+    permission_object = 'roles'
+    
     def list(self, request):
         queryset = Role.objects.all()
         serializer = RoleSerializer(queryset, many=True)
@@ -121,7 +124,8 @@ class UserGenericApiView(
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & ViewPermission]
+    permission_object = 'users'
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPageNumberPagination

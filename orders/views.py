@@ -1,6 +1,7 @@
 import csv
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.db import connection
 
 from .serializers import OrderSerializer
 from .models import Order
@@ -49,3 +50,26 @@ class ExportApiView(APIView):
                 writer.writerow(['', '', '', order_item.product_title, order_item.price, order_item.quantity])
         
         return response
+    
+class ChartData(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, _):
+        
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                           SELECT DATE_FORMAT(o.created_at, '%Y-%m-%d') as date, sum(oi.quantity * oi.price) as sum 
+                           FROM orders as o
+                           JOIN order_items as oi on o.id = oi.order_id
+                           GROUP BY date
+                           """)
+            row = cursor.fetchall()
+            data = [{
+                'date': item[0],
+                'sum': item[1]
+            } for item in row]
+            
+        return Response({
+            'data': data,
+        })
