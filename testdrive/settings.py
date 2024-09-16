@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',	# Add users app to the list of installed apps
     'products',	# Add products app to the list of installed apps
+    'orders',	# Add orders app to the list of installed apps
 ]
 
 MIDDLEWARE = [
