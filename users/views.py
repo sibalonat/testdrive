@@ -56,9 +56,10 @@ class AuthenticatedUser(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user
-        serializer = UserSerializer(user)
+        data = UserSerializer(user).data
+        data['permissions'] = [p['name'] for p in data.role.permissions.values()]
         return Response({
-            'data': serializer.data
+            'data': data
         })
 class PermissionAPIView(APIView):
     authentication_classes = [JWTAuthentication]
