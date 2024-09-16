@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import exceptions, viewsets, status, generics, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from testdrive.pagination import CustomPageNumberPagination
 from .authentication import JWTAuthentication, generate_jwt
 from .models import Permission, Role, User
 from .serializers import RoleSerializer, UserSerializer, PermissionSerializer
@@ -63,7 +64,6 @@ class PermissionAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        user = request.user
         serializer = PermissionSerializer(Permission.objects.all(), many=True)
         return Response({
             'data': serializer.data
@@ -112,33 +112,76 @@ class RoleViewSet(viewsets.ModelViewSet):
         return Response({'message': 'Role deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     
 
-class UserGenericApiView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin):
+class UserGenericApiView(
+    generics.GenericAPIView, 
+    mixins.ListModelMixin, 
+    mixins.RetrieveModelMixin, 
+    mixins.CreateModelMixin, 
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = CustomPageNumberPagination
+    
     def get(self, request, pk=None):
         if pk:
             return Response({
                 'data': self.retrieve(request, pk).data            
             })
 
-        return Response({
-            'data': self.list(request).data
-        })
+        return self.list(request)
         
     def post(self, request):
+        request.data.update({
+            'password': 123,
+            'role': request.data['role_id']
+        })
         return Response({
             'message': 'User created successfully',
             'data': self.create(request).data
         }, status=status.HTTP_201_CREATED)
         
     def put(self, request, pk=None):
+        if 'role_id' in request.data:
+            request.data.update({
+                'role': request.data['role_id']
+            })
         return Response({
             'message': 'User updated',
-            'data': self.update(request, pk).data
+            'data': self.partial_update(request, pk).data
         })
     
     def delete(self, request, pk=None):
         self.destroy(request, pk)
         return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
+class ProfileInfoApiView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk=None):
+        user = request.user
+        serializer = UserSerializer(instance=user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+        # return Response({
+        #     'message': 'User updated successfully',
+        #     'data': serializer.data
+        # })
+        
+class ProfilePasswordApiView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk=None):
+        user = request.user
+        data = request.data
+        if data['password'] != data['confirm_password']:
+            raise exceptions.APIException('Passwords do not match')
+        
+        user.set_password(data['password'])
+        user.save()
+        return Response({
+            'message': 'Password updated successfully'
+        })
