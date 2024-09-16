@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'users',	# Add users app to the list of installed apps
+    'products',	# Add products app to the list of installed apps
 ]
 
 MIDDLEWARE = [
